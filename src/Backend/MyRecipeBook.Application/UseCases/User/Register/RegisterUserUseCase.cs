@@ -12,6 +12,8 @@ namespace MyRecipeBook.Application.UseCases.User.Register
     {
         public ResponseRegisteredUserJson Execute(RequestRegisterUserJson request)
         {
+            Validate(request);
+
             return new ResponseRegisteredUserJson
             {
                 Name = request.Name,
