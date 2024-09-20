@@ -15,10 +15,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="ResourceMessagesException.pt-BR.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="ResourceMessagesException.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ResourceMessagesException.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+
+  
 
 </Project>

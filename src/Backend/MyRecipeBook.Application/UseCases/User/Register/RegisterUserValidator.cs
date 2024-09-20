@@ -14,10 +14,13 @@ namespace MyRecipeBook.Application.UseCases.User.Register
 
             RuleFor(user => user.Email)
                 .NotEmpty()
-                    .WithMessage("O email não pode ser vazio");
+                    .WithMessage(ResourceMessagesException.EMAIL_EMPTY)
+                .EmailAddress()
+                    .WithMessage(ResourceMessagesException.EMAIL_INVALID);
 
-            RuleFor(user => user.Email).EmailAddress();
-            RuleFor(user => user.Password.Length).GreaterThanOrEqualTo(6);
+            RuleFor(user => user.Password.Length)
+                .GreaterThanOrEqualTo(6)
+                    .WithMessage(ResourceMessagesException.PASSWORD_EMPTY); 
         }
     }
 }
