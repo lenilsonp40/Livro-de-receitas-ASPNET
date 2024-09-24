@@ -1,18 +1,40 @@
-﻿using MyRecipeBook.Communication.Requests;
+﻿using AutoMapper;
+using MyRecipeBook.Application.Services.AutoMapper;
+using MyRecipeBook.Application.Services.Cryptography;
+using MyRecipeBook.Communication.Requests;
 using MyRecipeBook.Communication.Responses;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MyRecipeBook.Domain.Repositories.User;
+using MyRecipeBook.Exceptions.ExceptionsBase;
 
 namespace MyRecipeBook.Application.UseCases.User.Register
 {
-    public class RegisterUserUseCase
+    public class RegisterUserUseCase : IRegisterUserUseCase
     {
-        public ResponseRegisteredUserJson Execute(RequestRegisterUserJson request)
+        private readonly IUserReadOnlyRepository _readOnlyRepository;
+        private readonly IUserWriteOnlyRepository _writeOnlyRepository;
+        private readonly IMapper _mapper;
+
+        public RegisterUserUseCase(IUserReadOnlyRepository readOnlyRepository, 
+            IUserWriteOnlyRepository writeOnlyRepository,
+            IMapper mapper)
         {
+            _readOnlyRepository = readOnlyRepository;
+            _writeOnlyRepository = writeOnlyRepository;
+            _mapper = mapper;
+        }
+
+        public async Task<ResponseRegisteredUserJson> Execute(RequestRegisterUserJson request)
+        {           
+
+            var criptografiaDeSenha = new PasswordEncripter();           
+
             Validate(request);
+
+            var user = _mapper.Map<Domain.Entities.User>(request);
+
+            user.Password = criptografiaDeSenha.Encrypt(request.Password);
+
+            await _writeOnlyRepository.Add(user);
 
             return new ResponseRegisteredUserJson
             {
@@ -28,9 +50,9 @@ namespace MyRecipeBook.Application.UseCases.User.Register
 
             if ( result.IsValid == false)
             {
-                var errorMessages = result.Errors.Select(e => e.ErrorMessage);
+                var errorMessages = result.Errors.Select(e => e.ErrorMessage).ToList();
 
-                throw new Exception();
+                throw new ErrorOnValidationException(errorMessages);
 
                 
             }
