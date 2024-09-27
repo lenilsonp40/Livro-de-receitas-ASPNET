@@ -22,9 +22,15 @@ namespace MyRecipeBook.API.Filters
             }
         }
 
-        private void HandleProjectException(ExceptionContext context)
+        private static void HandleProjectException(ExceptionContext context)
         {
-            if(context.Exception is ErrorOnValidationException)
+            if (context.Exception is InvalidLoginException)
+            {
+               
+                context.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                context.Result = new UnauthorizedObjectResult(new ResponseErrorJson(context.Exception.Message));
+            }
+            else if (context.Exception is ErrorOnValidationException)
             {
                 var exception = context.Exception as ErrorOnValidationException;
 
@@ -33,7 +39,7 @@ namespace MyRecipeBook.API.Filters
             }
         }
 
-        private void ThrowUnknowException(ExceptionContext context)
+        private static void ThrowUnknowException(ExceptionContext context)
         {
             context.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             context.Result = new ObjectResult(new ResponseErrorJson(ResourceMessagesException.UNKNOWN_ERROR));

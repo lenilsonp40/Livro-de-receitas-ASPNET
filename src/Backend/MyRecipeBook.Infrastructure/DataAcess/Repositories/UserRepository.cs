@@ -1,11 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyRecipeBook.Domain.Entities;
 using MyRecipeBook.Domain.Repositories.User;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MyRecipeBook.Infrastructure.DataAcess.Repositories
 {
@@ -27,6 +22,12 @@ namespace MyRecipeBook.Infrastructure.DataAcess.Repositories
         public async Task<bool> ExistActiveUserWithEmail(string email)
         {
             return await _dbContext.Users.AnyAsync(user => user.Email.Equals(email) && user.Active);
+        }
+
+        public async Task<User?> GetEmailAndPassword(string email, string password)
+        {
+            return await _dbContext.Users.AsNoTracking()
+                .FirstOrDefaultAsync(user => user.Active && user.Email.Equals(email) && user.Password.Equals(password));
         }
     }
 }
